@@ -10,7 +10,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ───── friendly diagnostics: tell the user exactly which GitHub files are missing ─────
+# ───── self-healing file layout + friendly diagnostics ─────
+import importlib  # noqa: E402
+import os  # noqa: E402
+import shutil  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 _ROOT = Path(__file__).resolve().parent
@@ -21,9 +24,46 @@ _REQUIRED = [
     "model/bone_fracture_model.keras", "model/class_names.json",
     "assets/training_curve.png", "assets/confusion_matrix.png",
 ]
+
+
+# --- organizer start ---
+def _organize_files(root, required):
+    """If files were uploaded to GitHub flat (no folders), copy each one into the folder it belongs in.
+    Matching is by file name, ignoring upper/lower case, wherever the file sits in the repo."""
+    index = {}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in (".git", "__pycache__", "data")]
+        for fn in filenames:
+            index.setdefault(fn.lower(), []).append(Path(dirpath) / fn)
+    changed = []
+    for rel in required:
+        target = root / rel
+        if target.exists():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.name == "__init__.py":
+            target.write_text("# package marker\n")
+            changed.append(rel)
+            continue
+        for cand in index.get(target.name.lower(), []):
+            if cand != target:
+                shutil.copy2(cand, target)
+                changed.append(rel)
+                break
+    if changed:
+        importlib.invalidate_caches()
+    return changed
+# --- organizer end ---
+
+
+try:
+    _organize_files(_ROOT, _REQUIRED)
+except Exception as _e:  # noqa: BLE001
+    st.warning(f"Could not auto-arrange the project files: {_e}")
+
 _missing = [f for f in _REQUIRED if not (_ROOT / f).exists()]
 if _missing:
-    st.error("Some project files are missing from your GitHub repository. Add them (keeping the folder names) and the app will start.")
+    st.error("Some project files are still missing from your GitHub repository. Upload them (any folder is fine) and the app will fix the layout itself.")
     st.code("\n".join(_missing))
     st.write("Files/folders found at the top level of the repo:", sorted(p.name for p in _ROOT.iterdir()))
     st.stop()
