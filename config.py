@@ -13,7 +13,7 @@ TAGLINE = "Fracture detection powered by deep learning"
 STUDENT_NAME = "Ahmad Mushtaq"
 COURSE = "Deep Learning Project"
 UNIVERSITY = "Superior University"
-# ROLL NO = "SU92-BSCSM-F22-171"
+ROLL_NO = "SU92-BSCSM-F22-171"
 GITHUB_URL = "https://github.com/ahmadmushtaq171/bone-fracture-detection"
 
 REPORT_URL = (
