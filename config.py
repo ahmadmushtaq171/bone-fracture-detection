@@ -10,19 +10,19 @@ BASE_DIR = Path(__file__).resolve().parent
 APP_NAME = "BoneScan AI"
 APP_ICON = "🦴"
 TAGLINE = "Fracture detection powered by deep learning"
-STUDENT_NAME = "Ahmad Mushtaq"
+STUDENT_NAME = "Your Name"
 COURSE = "Deep Learning Project"
-UNIVERSITY = "Superior University"
-ROLL_NO = "SU92-BSCSM-F22-171"
-GITHUB_URL = "https://github.com/ahmadmushtaq171/bone-fracture-detection"
+UNIVERSITY = "Your University"
+CONTACT_EMAIL = "your.email@example.com"
+GITHUB_URL = "https://github.com/your-username/bone-fracture-detection"
 
 REPORT_URL = (
     "https://docs.google.com/document/d/1fRYygyQGFRRIyugYKPS8V1C8O06Epiyx/edit"
-    "?usp=sharing"
+    "?usp=sharing&ouid=102969733195424319345&rtpof=true&sd=true"
 )
 PRESENTATION_URL = (
     "https://docs.google.com/presentation/d/1vweOdR2bLCvUDs62gW00GnIABs-d5Ocn/edit"
-    "?usp=sharing"
+    "?usp=sharing&ouid=102969733195424319345&rtpof=true&sd=true"
 )
 # ────────────────────────────────────────────────────────────────
 
