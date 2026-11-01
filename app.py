@@ -107,6 +107,17 @@ if page in ("login", "signup") and user:
     st.session_state.page = page = "detector"
 
 ui.inject_css()
+
+# Restore Streamlit's icon font (our global font rule would otherwise show icon names like "_arrow_right" as text)
+st.markdown(
+    """<style>
+[data-testid="stIconMaterial"], [data-testid="stIconMaterial"] *, .material-icons, .material-symbols-rounded{
+  font-family:'Material Symbols Rounded','Material Icons'!important; font-style:normal!important; font-weight:400!important;
+  letter-spacing:normal!important; text-transform:none!important; white-space:nowrap!important;
+  font-feature-settings:'liga'!important; -webkit-font-feature-settings:'liga'!important;}
+</style>""",
+    unsafe_allow_html=True,
+)
 ui.navbar()
 
 # ───── router (views are imported lazily so TensorFlow only loads when the detector runs) ─────
