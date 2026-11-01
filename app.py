@@ -10,6 +10,24 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# ───── friendly diagnostics: tell the user exactly which GitHub files are missing ─────
+from pathlib import Path  # noqa: E402
+
+_ROOT = Path(__file__).resolve().parent
+_REQUIRED = [
+    "config.py", "core/__init__.py", "core/auth.py", "core/db.py", "core/model.py", "core/styles.py", "core/ui.py",
+    "views/__init__.py", "views/home.py", "views/detector.py", "views/results.py", "views/report.py",
+    "views/presentation.py", "views/_embed.py", "views/login.py", "views/admin.py",
+    "model/bone_fracture_model.keras", "model/class_names.json",
+    "assets/training_curve.png", "assets/confusion_matrix.png",
+]
+_missing = [f for f in _REQUIRED if not (_ROOT / f).exists()]
+if _missing:
+    st.error("Some project files are missing from your GitHub repository. Add them (keeping the folder names) and the app will start.")
+    st.code("\n".join(_missing))
+    st.write("Files/folders found at the top level of the repo:", sorted(p.name for p in _ROOT.iterdir()))
+    st.stop()
+
 from core import auth, db, ui  # noqa: E402
 
 
