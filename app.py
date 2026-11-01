@@ -27,14 +27,22 @@ _REQUIRED = [
 
 
 # --- organizer start ---
+# Browsers rename duplicate downloads ("training_curve (1).png"), so these files are matched by pattern.
+_ALIASES = {
+    "model/bone_fracture_model.keras": lambda n: n.endswith(".keras"),
+    "model/class_names.json": lambda n: n.startswith("class_names") and n.endswith(".json"),
+    "assets/training_curve.png": lambda n: "training" in n and n.endswith(".png"),
+    "assets/confusion_matrix.png": lambda n: "confusion" in n and n.endswith(".png"),
+}
+
+
 def _organize_files(root, required):
     """If files were uploaded to GitHub flat (no folders), copy each one into the folder it belongs in.
-    Matching is by file name, ignoring upper/lower case, wherever the file sits in the repo."""
-    index = {}
+    Matching is by file name (ignoring upper/lower case) wherever the file sits in the repo."""
+    allfiles = []
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in (".git", "__pycache__", "data")]
-        for fn in filenames:
-            index.setdefault(fn.lower(), []).append(Path(dirpath) / fn)
+        allfiles += [Path(dirpath) / fn for fn in filenames]
     changed = []
     for rel in required:
         target = root / rel
@@ -45,11 +53,14 @@ def _organize_files(root, required):
             target.write_text("# package marker\n")
             changed.append(rel)
             continue
-        for cand in index.get(target.name.lower(), []):
-            if cand != target:
-                shutil.copy2(cand, target)
-                changed.append(rel)
-                break
+        match = _ALIASES.get(rel, lambda n, t=target.name.lower(): n == t)
+        found = next((c for c in allfiles if c != target and match(c.name.lower())), None)
+        if found:
+            shutil.copy2(found, target)
+            changed.append(rel)
+        elif target.name == "class_names.json":  # tiny file: safe to create ourselves
+            target.write_text('["fractured", "not fractured"]')
+            changed.append(rel)
     if changed:
         importlib.invalidate_caches()
     return changed
