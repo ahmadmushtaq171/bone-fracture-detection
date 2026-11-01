@@ -1,7 +1,7 @@
 """BoneScan AI: main entry point.  Run locally with:  streamlit run app.py"""
 import streamlit as st
 
-import config
+# import config
 
 st.set_page_config(
     page_title=f"{config.APP_NAME} · {config.TAGLINE}",
